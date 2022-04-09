@@ -1,9 +1,11 @@
 package com.pet.adoption.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.pet.adoption.model.Employee;
@@ -14,6 +16,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Autowired
 	private EmployeeRepository employeeRepository;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@Override
 	public List<Employee> findAllEmployee() {
@@ -27,7 +32,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public Optional<Employee> findByEmpNo(String empNo) {
+	public Optional<Employee> findByEmpNo(Long empNo) {
 		return employeeRepository.findByEmpNo(empNo);
 	}
 	
@@ -38,6 +43,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Override
 	public Employee saveEmployee(Employee employee) {
+		employee.setEmpPsw(passwordEncoder.encode(employee.getEmpPsw()));
+		employee.setEmpArrDate(LocalDate.now());
+		employee.setEmpAccStatus(0);
 		return employeeRepository.save(employee);
 	}
 

@@ -11,7 +11,7 @@ public interface EmployeeService {
 	
 	Optional<Employee> findByEmpName(String empName);
 	
-	Optional<Employee> findByEmpNo(String empNo);
+	Optional<Employee> findByEmpNo(Long empNo);
 	
 	Optional<Employee> findByEmpAccount(String empAccount);
 	

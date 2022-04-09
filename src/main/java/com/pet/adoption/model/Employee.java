@@ -23,7 +23,7 @@ public class Employee implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EMPLOYEE_GENERATOR")
     @SequenceGenerator(name = "EMPLOYEE_GENERATOR", sequenceName = "EMPLOYEE_SEQ", allocationSize = 1)
-	private String empNo;
+	private Long empNo;
 	private String empName;
 	private String empAccount;
 	private String empPsw;

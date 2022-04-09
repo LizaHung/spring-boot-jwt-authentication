@@ -22,7 +22,7 @@ public class Member implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MEMBER_GENERATOR")
     @SequenceGenerator(name = "MEMBER_GENERATOR", sequenceName = "MEM_SEQ", allocationSize = 1)
-	private String memNo;
+	private Long memNo;
 	private String memName;
 	private LocalDate memBirth;
 	private Integer memSex;

@@ -19,6 +19,6 @@ public class BackFunction {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BACKFUNCTION_GENERATOR")
     @SequenceGenerator(name = "BACKFUNCTION_GENERATOR", sequenceName = "BACKFUNCTION_SEQ", allocationSize = 1)
-	private String funNo;
+	private Long funNo;
 	private String funName;
 }

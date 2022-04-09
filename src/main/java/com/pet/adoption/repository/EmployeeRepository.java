@@ -6,11 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.pet.adoption.model.Employee;
 
-public interface EmployeeRepository extends JpaRepository<Employee, String> {
+public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
 	Optional<Employee> findByEmpName(String empName);
 
-	Optional<Employee> findByEmpNo(String empNo);
+	Optional<Employee> findByEmpNo(Long empNo);
 
 	Optional<Employee> findByEmpAccount(String empAccount);
 }

@@ -24,7 +24,7 @@ public class PetPic implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PETPIC_GENERATOR")
     @SequenceGenerator(name = "PETPIC_GENERATOR", sequenceName = "PETPIC_SEQ", allocationSize = 1)
-	private String petPicNo;
+	private Long petPicNo;
 	
 	@ManyToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="petNo")

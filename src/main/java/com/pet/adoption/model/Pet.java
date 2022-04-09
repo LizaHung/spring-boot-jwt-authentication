@@ -25,7 +25,7 @@ public class Pet implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PET_GENERATOR")
     @SequenceGenerator(name = "PET_GENERATOR", sequenceName = "PET_SEQ", allocationSize = 1)
-	private String petNo;
+	private Long petNo;
 	
 	@ManyToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="memNo")
