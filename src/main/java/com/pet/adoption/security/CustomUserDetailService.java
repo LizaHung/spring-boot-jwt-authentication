@@ -10,8 +10,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.pet.adoption.exception.NotFoundException;
 import com.pet.adoption.model.Employee;
 import com.pet.adoption.service.EmployeeService;
+
 @Service
 public class CustomUserDetailService implements UserDetailsService {
 
@@ -23,15 +25,13 @@ public class CustomUserDetailService implements UserDetailsService {
 		Employee employee = employeeService.findByEmpAccount(empAccount)
 				.orElseThrow(() -> new UsernameNotFoundException(empAccount));
 
+		if (employee.getEmpAccStatus().toString() == "INVALID")
+			throw new UsernameNotFoundException("Employee INVALID " + employee.getEmpName());
+
 		Set<GrantedAuthority> authorities = Set.of(new SimpleGrantedAuthority(employee.getEmpRole()));
 
-		return UserPrincipal.builder()
-				.password(employee.getEmpPsw())
-				.username(employee.getEmpName())
-				.account(employee.getEmpAccount())
-				.empNo(employee.getEmpNo())
-				.authorities(authorities)
-				.build();
+		return UserPrincipal.builder().password(employee.getEmpPsw()).username(employee.getEmpName())
+				.account(employee.getEmpAccount()).empNo(employee.getEmpNo()).authorities(authorities).build();
 	}
 
 }

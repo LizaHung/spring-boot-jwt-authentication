@@ -7,9 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+
+import com.pet.adoption.common.EmpAccStatusEnum;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,13 +30,15 @@ public class Employee implements Serializable{
 	private String empAccount;
 	private String empPsw;
 	private String empNickname;
-	private Integer empAccStatus;
+	private EmpAccStatusEnum empAccStatus;
 	private String empEmail;
+	
+	@Lob
 	private byte[] empPhoto;
 	private String empRole;
 	private LocalDate empArrDate;
 
-	@Transient
-	private String token;
+//	@Transient
+//	private String token;
 
 }
