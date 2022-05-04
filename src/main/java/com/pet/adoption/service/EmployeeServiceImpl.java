@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,6 +24,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Autowired
 	private EmployeeRepository employeeRepository;
+	
+	@Autowired
+	private EmpAuthorityService empAuthorityService;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -62,17 +67,22 @@ public class EmployeeServiceImpl implements EmployeeService {
 		Employee emp = modelMapperUtil.map(theEmployee, Employee.class);
 		if (theEmployee.getEmpPhoto() != null)
 			emp.setEmpPhoto(theEmployee.getEmpPhoto().getBytes());
-		return employeeRepository.save(emp);
+		Employee savedEmp = employeeRepository.save(emp);
+		empAuthorityService.saveFunByRole(savedEmp.getEmpNo(), savedEmp.getEmpRole());
+		return savedEmp;
 	}
 
 	@Override
+	@Transactional
 	public Employee updateEmployee(EmployeeParam theEmployee) throws IOException {
-		Employee emp = employeeRepository.findByEmpNo(theEmployee.getEmpNo()).get();
+		Employee tempEmp = modelMapperUtil.map(theEmployee, Employee.class);
+		tempEmp.setEmpAccStatus(EmpAccStatusEnum.VALID);
 		if (theEmployee.getEmpPhoto() != null)
-			emp.setEmpPhoto(theEmployee.getEmpPhoto().getBytes());
+			tempEmp.setEmpPhoto(theEmployee.getEmpPhoto().getBytes());
 		if (StringUtils.isNoneBlank(theEmployee.getEmpPsw()))
-			emp.setEmpPsw(passwordEncoder.encode(theEmployee.getEmpPsw()));
-		return employeeRepository.save(emp);
+			tempEmp.setEmpPsw(passwordEncoder.encode(theEmployee.getEmpPsw()));
+		empAuthorityService.saveFunByRole(tempEmp.getEmpNo(), tempEmp.getEmpRole());
+		return employeeRepository.save(tempEmp);
 	}
 
 	@Override

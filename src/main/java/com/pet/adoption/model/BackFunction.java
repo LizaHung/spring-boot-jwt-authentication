@@ -21,4 +21,5 @@ public class BackFunction {
     @SequenceGenerator(name = "BACKFUNCTION_GENERATOR", sequenceName = "BACKFUNCTION_SEQ", allocationSize = 1)
 	private Long funNo;
 	private String funName;
+	private String funUrl;
 }

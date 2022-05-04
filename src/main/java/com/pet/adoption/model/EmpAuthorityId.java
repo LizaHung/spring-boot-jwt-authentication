@@ -8,8 +8,8 @@ import javax.persistence.OneToOne;
 
 import lombok.Data;
 
-@Embeddable
-@Data
+//@Embeddable
+//@Data
 public class EmpAuthorityId  implements Serializable {
 
 	@OneToOne

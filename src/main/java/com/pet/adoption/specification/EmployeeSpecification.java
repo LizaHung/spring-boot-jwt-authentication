@@ -41,7 +41,7 @@ public class EmployeeSpecification {
 			}
 
 			if (StringUtils.isNoneBlank(theEmployee.getEmpEmail())) {
-				predicatesList.add(builder.like(root.get("empEmail"), "%" + theEmployee.getEmpEmail() + "%"));
+				predicatesList.add(builder.equal(root.get("empEmail"), theEmployee.getEmpEmail()));
 			}
 
 			if (theEmployee.getEmpRole() != null) {
