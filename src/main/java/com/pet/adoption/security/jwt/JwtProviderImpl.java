@@ -24,9 +24,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Component
 public class JwtProviderImpl implements JwtProvider {
 
@@ -44,50 +42,44 @@ public class JwtProviderImpl implements JwtProvider {
 		String role = user.getAuthorities().stream().map(GrantedAuthority::getAuthority)
 				.collect(Collectors.joining(","));
 
-		System.out.println("role----" + role);
-		log.info("role----{}", role);
-
-		return Jwts.builder()
-				.setSubject(user.getUsername())
-				.claim("role", role)
-				.claim("account", user.getAccount())
+		return Jwts.builder().setSubject(user.getUsername()).claim("role", role).claim("account", user.getAccount()).claim("empNo",user.getEmpNo())
 				.setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION_TIME))
 				.signWith(jwtKey, SignatureAlgorithm.HS512).compact();
 	}
 
+
 	@Override
 	public Authentication getAuthentication(HttpServletRequest request) {
 		Claims claims = extractClaim(request);
-		
-		if(claims == null) return null;
-		
+
+		if (claims == null)
+			return null;
+
 		String username = claims.getSubject();
-		
-		if(username == null) return null;
-		
+
+		if (username == null)
+			return null;
+
 		String account = claims.get("account").toString();
-		
+
 		Set<GrantedAuthority> authorities = Arrays.stream(claims.get("role").toString().split(","))
-											  .map(SimpleGrantedAuthority::new)
-											  .collect(Collectors.toSet());
-		
-		UserDetails userdetail = UserPrincipal.builder()
-										  .account(account)
-										  .username(username)
-										  .authorities(authorities)
-										  .build();
-		
+				.map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
+
+		UserDetails userdetail = UserPrincipal.builder().account(account).username(username).authorities(authorities)
+				.build();
+
 		return new UsernamePasswordAuthenticationToken(userdetail, null, authorities);
-		
+
 	}
 
 	@Override
 	public boolean isTokenValid(HttpServletRequest request) {
-		
-		Claims claims  = extractClaim(request);
-		
-		if(claims == null || claims.getExpiration().before(new Date())) return false;
-		
+
+		Claims claims = extractClaim(request);
+
+		if (claims == null || claims.getExpiration().before(new Date()))
+			return false;
+
 		return true;
 	}
 
@@ -95,17 +87,11 @@ public class JwtProviderImpl implements JwtProvider {
 
 		String token = request.getHeader("authorization");
 
-
 		if (StringUtils.hasLength(token) && token.startsWith("Bearer")) {
-			log.info("token----{}",  token.substring(7));
-			
+
 			Key jwtKey = Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8));
 
-			return Jwts.parserBuilder()
-					.setSigningKey(jwtKey)
-					.build()
-					.parseClaimsJws(token.substring(7))
-					.getBody();
+			return Jwts.parserBuilder().setSigningKey(jwtKey).build().parseClaimsJws(token.substring(7)).getBody();
 		}
 
 		return null;
