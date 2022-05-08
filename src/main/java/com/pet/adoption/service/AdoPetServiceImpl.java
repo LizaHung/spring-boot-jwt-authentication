@@ -78,10 +78,13 @@ public class AdoPetServiceImpl implements AdoPetService {
 	@Override
 	@Transactional
 	public AdoPet saveAdoPet(AdoPetParam adoPet) {
+		System.out.println("status" + adoPet.getAdoStatus());
+
 		MultipartFile[] adoPetPic = adoPet.getPhotos();
 		AdoPet tempPet = modelMapperUtil.map(adoPet, AdoPet.class);
-//		int age = Period.between(adoPet.getPetBirth(), LocalDate.now()).getYears();
-//		tempPet.setAge(age);
+		if (tempPet.getAdoStatus() == null)
+			tempPet.setAdoStatus(AdoStatusEnum.CREATE);
+
 		AdoPet adopet = adoPetRepository.save(tempPet);
 		System.out.println("modelMapperUtil done");
 
@@ -112,10 +115,11 @@ public class AdoPetServiceImpl implements AdoPetService {
 			adoPetPicRepository.deleteAllByIdInBatch(adoPet.getDelImageList());
 		return saveAdoPet(adoPet);
 	}
+
 	public void deleteAdopet(Long adoPet) {
 		adoPetRepository.deleteById(adoPet);
 	}
-	
+
 	@Override
 	public AdoPet updateAdoStatus(Long adoPetNo, String adoStatus) {
 		AdoPet adopet = adoPetRepository.findByAdoPetNo(adoPetNo);
@@ -329,8 +333,6 @@ public class AdoPetServiceImpl implements AdoPetService {
 			e.printStackTrace();
 		}
 	}
-
-
 
 //	@Override
 //	public AdoPet updateAdoPet(Long adoptNo, Map<Object, Object> param) {

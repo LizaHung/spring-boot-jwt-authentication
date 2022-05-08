@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import com.pet.adoption.common.EmpAccStatusEnum;
 import com.pet.adoption.dto.param.EmployeeParam;
 import com.pet.adoption.dto.param.ForgotPswParam;
-import com.pet.adoption.exception.NotFoundException;
+import com.pet.adoption.exception.UserNotFoundException;
 import com.pet.adoption.model.Employee;
 import com.pet.adoption.repository.ChangePswParam;
 import com.pet.adoption.repository.EmployeeRepository;
@@ -132,7 +132,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 			javaMailSender.send(mimeMessage);
 		} else
-			throw new NotFoundException("Employee email or account not found");
+			throw new UserNotFoundException("Employee email or account not found");
 
 	}
 
@@ -140,7 +140,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public Employee ChangePsw(ChangePswParam forgotPswParam) {
 		Employee emp = employeeRepository.findByEmpAccount(forgotPswParam.getAccount()).get();
 		if (emp == null)
-			throw new NotFoundException("Employee email or account not found");
+			throw new UserNotFoundException("Employee email or account not found");
 		emp.setEmpPsw(passwordEncoder.encode(forgotPswParam.getPassword()));
 		return employeeRepository.save(emp);
 

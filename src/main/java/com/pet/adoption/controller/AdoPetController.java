@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,13 +43,12 @@ public class AdoPetController {
 	private ModelMapperUtil modelMapperUtil;
 
 	@PostMapping("/adopets")
-	public AdoPetDto addAdoPet(AdoPetParam adoPetParam) {
-		System.out.println("Tes-" + adoPetParam.getPhotos().length);
+	public AdoPetDto addAdoPet(@Valid AdoPetParam adoPetParam) {
 		return modelMapperUtil.map(adoPetService.saveAdoPet(adoPetParam), AdoPetDto.class);
 	}
 
 	@PutMapping("/adopets")
-	public AdoPetDto updateAdoPet(AdoPetParam adoPet) {
+	public AdoPetDto updateAdoPet(@Valid AdoPetParam adoPet) {
 		return modelMapperUtil.map(adoPetService.updateAdoPet(adoPet), AdoPetDto.class);
 	}
 	
@@ -127,9 +127,9 @@ public class AdoPetController {
 
 		AdoPetPic pic = adoPetPicService.getRandomPhoto(adopetNo);
 
+		if (pic.getAdoPetPic() != null) {
 		byte[] buf = new byte[4 * 1024];
 
-		if (pic.getAdoPetPic() != null) {
 			ByteArrayInputStream bin = new ByteArrayInputStream(pic.getAdoPetPic());
 
 			int len;
