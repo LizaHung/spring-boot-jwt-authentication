@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.pet.adoption.dto.LoginTokenDto;
 import com.pet.adoption.security.UserPrincipal;
 
 import io.jsonwebtoken.Claims;
@@ -34,23 +35,33 @@ public class JwtProviderImpl implements JwtProvider {
 	@Value("${jwt.expiration-in.ms}")
 	private Long JWT_EXPIRATION_TIME;
 
+	@Value("${jwt.refreshtoken.expiration-in.ms}")
+	private Long JWT_REFRESH_EXPIRATION_TIME;
+
 	@Override
-	public String generateToken(UserPrincipal user) {
+	public LoginTokenDto generateToken(UserPrincipal user) {
 
 		Key jwtKey = Keys.hmacShaKeyFor(JWT_SECRET.getBytes());
 
 		String role = user.getAuthorities().stream().map(GrantedAuthority::getAuthority)
 				.collect(Collectors.joining(","));
 
-		return Jwts.builder().setSubject(user.getUsername()).claim("role", role).claim("account", user.getAccount()).claim("empNo",user.getEmpNo())
+		LoginTokenDto loginTokenDto = new LoginTokenDto();
+		loginTokenDto.setToken(Jwts.builder().setSubject(user.getUsername()).claim("role", role)
+				.claim("account", user.getAccount()).claim("empNo", user.getEmpNo())
 				.setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION_TIME))
-				.signWith(jwtKey, SignatureAlgorithm.HS512).compact();
+				.signWith(jwtKey, SignatureAlgorithm.HS512).compact());
+		loginTokenDto.setRefreshToken(Jwts.builder().setSubject(user.getUsername()).claim("role", role)
+				.claim("account", user.getAccount()).claim("empNo", user.getEmpNo())
+				.setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION_TIME))
+				.signWith(jwtKey, SignatureAlgorithm.HS512).compact());
+
+		return loginTokenDto;
 	}
 
-
 	@Override
-	public Authentication getAuthentication(HttpServletRequest request) {
-		Claims claims = extractClaim(request);
+	public Authentication getAuthentication(String token) {
+		Claims claims = extractClaim(token);
 
 		if (claims == null)
 			return null;
@@ -61,12 +72,13 @@ public class JwtProviderImpl implements JwtProvider {
 			return null;
 
 		String account = claims.get("account").toString();
+		Long empNo = Long.valueOf(claims.get("empNo").toString());
 
 		Set<GrantedAuthority> authorities = Arrays.stream(claims.get("role").toString().split(","))
 				.map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
 
-		UserDetails userdetail = UserPrincipal.builder().account(account).username(username).authorities(authorities)
-				.build();
+		UserDetails userdetail = UserPrincipal.builder().account(account).username(username).empNo(empNo)
+				.authorities(authorities).build();
 
 		return new UsernamePasswordAuthenticationToken(userdetail, null, authorities);
 
@@ -75,7 +87,9 @@ public class JwtProviderImpl implements JwtProvider {
 	@Override
 	public boolean isTokenValid(HttpServletRequest request) {
 
-		Claims claims = extractClaim(request);
+		String token = request.getHeader("authorization");
+
+		Claims claims = extractClaim(token);
 
 		if (claims == null || claims.getExpiration().before(new Date()))
 			return false;
@@ -83,15 +97,16 @@ public class JwtProviderImpl implements JwtProvider {
 		return true;
 	}
 
-	private Claims extractClaim(HttpServletRequest request) {
+	private Claims extractClaim(String token) {
 
-		String token = request.getHeader("authorization");
+		if (StringUtils.hasLength(token)) {
 
-		if (StringUtils.hasLength(token) && token.startsWith("Bearer")) {
+			if (token.startsWith("Bearer"))
+				token = token.substring(7);
 
 			Key jwtKey = Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8));
 
-			return Jwts.parserBuilder().setSigningKey(jwtKey).build().parseClaimsJws(token.substring(7)).getBody();
+			return Jwts.parserBuilder().setSigningKey(jwtKey).build().parseClaimsJws(token).getBody();
 		}
 
 		return null;

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.pet.adoption.dto.LoginTokenDto;
 import com.pet.adoption.dto.param.LoginParam;
+import com.pet.adoption.dto.param.RefreshTokenParam;
 import com.pet.adoption.security.jwt.JwtProvider;
 
 @Service
@@ -19,21 +20,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	@Autowired
 	private AuthenticationManager authenticationManager;
 
-
 	@Override
 	public LoginTokenDto loginAndReturnJWT(LoginParam employee) {
-
-		LoginTokenDto loginTokenDto = new LoginTokenDto();
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(employee.getEmpAccount(), employee.getEmpPsw()));
 		UserPrincipal emp = (UserPrincipal) authentication.getPrincipal();
-
-		String token = jwtProvider.generateToken(emp);
-		loginTokenDto.setToken(token);
-
-		return loginTokenDto;
+		return jwtProvider.generateToken(emp);
 	}
 
-	
+	@Override
+	public LoginTokenDto refreshToken(RefreshTokenParam refreshTokenParam) {
+		Authentication authentication = jwtProvider.getAuthentication(refreshTokenParam.getRefreshToken());
+		UserPrincipal emp = (UserPrincipal) authentication.getPrincipal();
+		return jwtProvider.generateToken(emp);
+	}
 
 }

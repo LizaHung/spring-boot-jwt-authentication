@@ -23,7 +23,7 @@ public class EmpSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private CustomUserDetailService customUserDetailService;
-	
+
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -37,24 +37,18 @@ public class EmpSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.cors();
 		http.headers().frameOptions().disable().and().csrf().disable();
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
-				.antMatchers("/h2-console/**").permitAll().antMatchers("/api/empAuth/**").permitAll().anyRequest()
+				.antMatchers("/h2-console/**").permitAll().antMatchers("/empAuth/**").permitAll()
+				.antMatchers("/**/show/**").permitAll().anyRequest()
 				.authenticated();
 
 		http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
-
-	
 
 	@Override
 	@Bean(BeanIds.AUTHENTICATION_MANAGER)
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
 	}
-	
-//	@Bean
-//	public PasswordEncoder passwordEncoder() {
-//		return new BCryptPasswordEncoder();
-//	}
 
 	@Bean
 	public JwtAuthorizationFilter jwtAuthorizationFilter() {

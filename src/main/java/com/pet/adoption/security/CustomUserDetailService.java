@@ -10,7 +10,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.pet.adoption.exception.NotFoundException;
+import com.pet.adoption.exception.UserForbiddenException;
+import com.pet.adoption.exception.UserNotFoundException;
 import com.pet.adoption.model.Employee;
 import com.pet.adoption.service.EmployeeService;
 
@@ -23,10 +24,10 @@ public class CustomUserDetailService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String empAccount) throws UsernameNotFoundException {
 		Employee employee = employeeService.findByEmpAccount(empAccount)
-				.orElseThrow(() -> new UsernameNotFoundException(empAccount));
+				.orElseThrow(() -> new UserNotFoundException("Employee not found 12345: " + empAccount));
 
 		if (employee.getEmpAccStatus().toString() == "INVALID")
-			throw new UsernameNotFoundException("Employee INVALID " + employee.getEmpName());
+			throw new UserForbiddenException(employee.getEmpName() + "is forbidden");
 
 		Set<GrantedAuthority> authorities = Set.of(new SimpleGrantedAuthority(employee.getEmpRole()));
 
