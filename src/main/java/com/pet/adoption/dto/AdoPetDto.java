@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.pet.adoption.model.AdoPetPic;
-import com.pet.adoption.model.Member;
+import com.pet.adoption.model.Breeder;
 
 import lombok.Data;
 
@@ -13,7 +13,7 @@ public class AdoPetDto {
 
 	private EmployeeDto employee;
 	private Long adoPetNo;
-	private Member member;
+	private Breeder breeder;
 	private String adoStatus;
 	private String petType;
 	private String petName;

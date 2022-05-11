@@ -40,9 +40,9 @@ public class AdoPet implements Serializable {
     @SequenceGenerator(name = "ADOPET_GENERATOR", sequenceName = "ADOPET_SEQ", allocationSize = 1)
 	private Long adoPetNo;
 	
-	@OneToOne
-	@JoinColumn(name="memNo")
-	private Member member;
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name="breederNo")
+	private Breeder breeder;
 	
 	@OneToOne
 	@JoinColumn(name="empNo")

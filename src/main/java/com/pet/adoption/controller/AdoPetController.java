@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +24,6 @@ import com.pet.adoption.dto.AdoPetDto;
 import com.pet.adoption.dto.param.AdoPetParam;
 import com.pet.adoption.model.AdoPet;
 import com.pet.adoption.model.AdoPetPic;
-import com.pet.adoption.model.Member;
 import com.pet.adoption.service.AdoPetPicService;
 import com.pet.adoption.service.AdoPetService;
 import com.pet.adoption.util.ModelMapperUtil;
@@ -71,12 +69,6 @@ public class AdoPetController {
 	@GetMapping("/adopets/{adostatus}")
 	public List<AdoPetDto> getAllByAdoStatus(@PathVariable AdoStatusEnum adostatus) {
 		return modelMapperUtil.mapList(adoPetService.findByAdoStatus(adostatus), AdoPetDto.class);
-	}
-
-	@GetMapping("/findByMember/{memNo}")
-	public List<AdoPetDto> findByMember(@RequestBody Member member) {
-		List<AdoPet> adoPets = adoPetService.findByMember(member);
-		return modelMapperUtil.mapList(adoPets, AdoPetDto.class);
 	}
 
 	@GetMapping("/{word}")
