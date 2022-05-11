@@ -53,7 +53,7 @@ public class JwtProviderImpl implements JwtProvider {
 				.signWith(jwtKey, SignatureAlgorithm.HS512).compact());
 		loginTokenDto.setRefreshToken(Jwts.builder().setSubject(user.getUsername()).claim("role", role)
 				.claim("account", user.getAccount()).claim("empNo", user.getEmpNo())
-				.setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION_TIME))
+				.setExpiration(new Date(System.currentTimeMillis() + JWT_REFRESH_EXPIRATION_TIME))
 				.signWith(jwtKey, SignatureAlgorithm.HS512).compact());
 
 		return loginTokenDto;

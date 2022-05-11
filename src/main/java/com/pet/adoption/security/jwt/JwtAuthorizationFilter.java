@@ -40,7 +40,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 		} catch (ExpiredJwtException e) {
 			ExceptionDto error = new ExceptionDto();
 			error.setStatus(1403);
-			error.setMessage("token expired fff");
 			error.setTimeStamp(System.currentTimeMillis());
 			
 			String errorMsg = new ObjectMapper().writeValueAsString(error);

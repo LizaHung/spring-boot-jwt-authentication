@@ -4,7 +4,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -15,14 +15,12 @@ import io.jsonwebtoken.ExpiredJwtException;
 @ControllerAdvice
 public class RestExceptionHandler {
 
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ExceptionDto> handleException(MethodArgumentNotValidException exception) {
-
+	@ExceptionHandler(BindException.class)
+	public ResponseEntity<ExceptionDto> handleException(BindException exception) {
 		StringBuilder errorMsg = new StringBuilder();
 		exception.getBindingResult().getAllErrors().forEach((error) -> {
-			errorMsg.append(error.getDefaultMessage() + "<br>");
+			errorMsg.append(error.getDefaultMessage() + " ");
 		});
-
 		ExceptionDto error = new ExceptionDto();
 		error.setStatus(HttpStatus.BAD_REQUEST.value());
 		error.setMessage(errorMsg.toString());
@@ -36,6 +34,15 @@ public class RestExceptionHandler {
 		error.setStatus(HttpStatus.UNAUTHORIZED.value());
 		String errorMsg = exception.getMessage().equals("Bad credentials") ? "帳號或密碼有誤，請重新數入" : exception.getMessage();
 		error.setMessage(errorMsg);
+		error.setTimeStamp(System.currentTimeMillis());
+		return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+	}
+	
+
+	@ExceptionHandler(ExpiredJwtException.class) //refresh token expire
+	public ResponseEntity<ExceptionDto> handleException(ExpiredJwtException exception) {
+		ExceptionDto error = new ExceptionDto();
+		error.setStatus(HttpStatus.UNAUTHORIZED.value());
 		error.setTimeStamp(System.currentTimeMillis());
 		return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
 	}

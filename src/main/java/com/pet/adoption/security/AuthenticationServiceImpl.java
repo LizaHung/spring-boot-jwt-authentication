@@ -11,6 +11,8 @@ import com.pet.adoption.dto.param.LoginParam;
 import com.pet.adoption.dto.param.RefreshTokenParam;
 import com.pet.adoption.security.jwt.JwtProvider;
 
+import io.jsonwebtoken.ExpiredJwtException;
+
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
@@ -29,7 +31,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	@Override
-	public LoginTokenDto refreshToken(RefreshTokenParam refreshTokenParam) {
+	public LoginTokenDto refreshToken(RefreshTokenParam refreshTokenParam) throws ExpiredJwtException {
 		Authentication authentication = jwtProvider.getAuthentication(refreshTokenParam.getRefreshToken());
 		UserPrincipal emp = (UserPrincipal) authentication.getPrincipal();
 		return jwtProvider.generateToken(emp);
