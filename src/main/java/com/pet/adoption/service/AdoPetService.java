@@ -1,12 +1,14 @@
 package com.pet.adoption.service;
 
+import java.io.IOException;
 import java.util.List;
+
+import javax.mail.MessagingException;
 
 import com.pet.adoption.common.AdoStatusEnum;
 import com.pet.adoption.dto.param.AdoPetParam;
 import com.pet.adoption.dto.param.PdfParam;
 import com.pet.adoption.model.AdoPet;
-import com.pet.adoption.model.Member;
 
 public interface AdoPetService {
 
@@ -26,10 +28,7 @@ public interface AdoPetService {
 
 	AdoPet findByAdoPetNo(Long adoPetNo);
 
-	List<AdoPet> findByMember(Member member);
-	
-	void insertAppForm(PdfParam param);
-	void updateAppForm(PdfParam param);
-//	AdoPet updateAdoPet(Long adoptNo, Map<Object, Object> param);
+	void insertAppForm(PdfParam param) throws IOException;
+	void updateAppForm(PdfParam param) throws IOException, MessagingException;
 
 }

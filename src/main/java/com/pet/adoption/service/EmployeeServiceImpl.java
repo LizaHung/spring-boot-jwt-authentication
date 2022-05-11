@@ -7,14 +7,11 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +23,7 @@ import com.pet.adoption.model.Employee;
 import com.pet.adoption.repository.ChangePswParam;
 import com.pet.adoption.repository.EmployeeRepository;
 import com.pet.adoption.specification.EmployeeSpecification;
+import com.pet.adoption.util.MailService;
 import com.pet.adoption.util.ModelMapperUtil;
 
 @Service
@@ -44,7 +42,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	private ModelMapperUtil modelMapperUtil;
 
 	@Autowired
-	private JavaMailSender javaMailSender;
+	private MailService mailService;
 
 	@Override
 	public List<Employee> findAllEmployee() {
@@ -74,7 +72,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Override
 	public Employee saveEmployee(EmployeeParam theEmployee) throws IOException {
-		theEmployee.setEmpPsw(passwordEncoder.encode(theEmployee.getEmpPsw()));
+		theEmployee.setEmpPsw(passwordEncoder.encode("123456"));
 		theEmployee.setEmpAccStatus(EmpAccStatusEnum.VALID.toString());
 		Employee emp = modelMapperUtil.map(theEmployee, Employee.class);
 		if (theEmployee.getEmpPhoto() != null)
@@ -114,23 +112,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 		List<Employee> result = employeeRepository.findAll(spec);
 		if (result.size() > 0) {
 			Employee emp = result.get(0);
-			MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-
-			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 
 			String url = String.join("-", "http://localhost:9001/#/change-psw?",
 					Base64.getEncoder().encodeToString(emp.getEmpAccount().getBytes()),
 					Base64.getEncoder().encodeToString(Long.toString(System.currentTimeMillis()).getBytes()));
 
 			String messageText = "親愛的 " + emp.getEmpName() + " 先生/女士您好，" + "\n\n" + "請於三十分鐘內至" + url + "\n\n"
-					+ "變更您的密碼，謝謝" + "\n\n" + "祝您有美好的一天" + "\n" + "Petfect";
+					+ "變更您的密碼，謝謝" + "\n\n" + "祝您有美好的一天" + "\n" + "Petfect Match";
 
-			helper.setTo(emp.getEmpEmail());
-			helper.setSubject("主旨：忘記密碼");
-
-			helper.setText(messageText);
-
-			javaMailSender.send(mimeMessage);
+			mailService.sendEmail(emp.getEmpEmail(), "Petfect Match 忘記密碼申請", messageText, null);
 		} else
 			throw new UserNotFoundException("Employee email or account not found");
 
