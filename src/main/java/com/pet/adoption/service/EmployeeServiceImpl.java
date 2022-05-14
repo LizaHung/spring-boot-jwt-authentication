@@ -86,6 +86,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
+	@Transactional
 	public Employee saveEmployee(EmployeeParam theEmployee) throws IOException {
 		theEmployee.setEmpPsw(passwordEncoder.encode("123456"));
 		theEmployee.setEmpAccStatus(EmpAccStatusEnum.VALID.toString());
@@ -104,8 +105,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 		tempEmp.setEmpAccStatus(EmpAccStatusEnum.VALID);
 		if (theEmployee.getEmpPhoto() != null)
 			tempEmp.setEmpPhoto(theEmployee.getEmpPhoto().getBytes());
-		if (StringUtils.isNoneBlank(theEmployee.getEmpPsw()))
-			tempEmp.setEmpPsw(passwordEncoder.encode(theEmployee.getEmpPsw()));
 		empAuthorityService.saveFunByRole(tempEmp.getEmpNo(), tempEmp.getEmpRole());
 		return employeeRepository.save(tempEmp);
 	}
