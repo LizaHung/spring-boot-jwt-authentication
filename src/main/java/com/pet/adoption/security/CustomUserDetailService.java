@@ -27,7 +27,7 @@ public class CustomUserDetailService implements UserDetailsService {
 				.orElseThrow(() -> new UserNotFoundException("Employee not found: " + empAccount));
 
 		if (employee.getEmpAccStatus().toString() == "INVALID")
-			throw new UserForbiddenException(employee.getEmpName() + "is forbidden");
+			throw new UserForbiddenException(employee.getEmpName() + " is forbidden");
 
 		Set<GrantedAuthority> authorities = Set.of(new SimpleGrantedAuthority(employee.getEmpRole()));
 

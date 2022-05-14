@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +47,7 @@ public class EmpAuthorityServiceImpl implements EmpAuthorityService {
 	}
 
 	@Override
+	@Transactional
 	public List<EmpAuthority> saveAuthority(EmpAuthorityParam param) {
 		List<EmpAuthority> authorities = getAuthList(param.getFunNo(), param.getEmpNo());
 		List<EmpAuthority> existAuthorities = empAuthorityRepository.findByEmpNo(param.getEmpNo());
