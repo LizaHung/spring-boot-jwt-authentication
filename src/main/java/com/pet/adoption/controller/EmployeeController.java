@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -37,6 +39,7 @@ public class EmployeeController {
 
 	@Autowired
 	private ModelMapperUtil modelMapperUtil;
+	
 
 	@PostMapping
 	public EmployeeDto addEmployee(@Valid EmployeeParam theEmployee) throws IOException {
@@ -59,12 +62,9 @@ public class EmployeeController {
 		return modelMapperUtil.map(empService.updateEmployeeAccStatus(empNo), EmployeeDto.class);
 	}
 
-	@GetMapping("/{empName}")
-	public EmployeeDto getEmployee(@PathVariable String empName) {
-		if (empService.findByEmpName(empName).isEmpty()) {
-			throw new UserNotFoundException("Employee Number not found- " + empName);
-		}
-		return modelMapperUtil.map(empService.findByEmpName(empName).get(), EmployeeDto.class);
+	@GetMapping("/{empNo}")
+	public EmployeeDto getEmployee(@PathVariable Long empNo) {
+		return modelMapperUtil.map(empService.findByEmpNo(empNo), EmployeeDto.class);
 	}
 
 	@GetMapping
@@ -74,22 +74,7 @@ public class EmployeeController {
 
 	@GetMapping("/show/{empNo}")
 	public void getEmpPhoto(HttpServletResponse res, @PathVariable("empNo") Long empNo) throws IOException {
-		Employee emp = empService.findByEmpNo(empNo).get();
-		if (emp.getEmpPhoto() != null) {
-			res.setContentType("image/gif");
-			ServletOutputStream out = res.getOutputStream();
-	
-			byte[] buf = new byte[4 * 1024];
-	
-			ByteArrayInputStream bin = new ByteArrayInputStream(emp.getEmpPhoto());
-	
-			int len;
-			while ((len = bin.read(buf)) != -1) {
-				out.write(buf, 0, len);
-			}
-			bin.close();
-			out.close();
-		}
+		empService.getEmptPhoto(res, empNo);
 	}
 
 }

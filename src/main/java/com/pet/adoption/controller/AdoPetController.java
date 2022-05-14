@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,6 +29,7 @@ import com.pet.adoption.model.AdoPetPic;
 import com.pet.adoption.service.AdoPetPicService;
 import com.pet.adoption.service.AdoPetService;
 import com.pet.adoption.util.ModelMapperUtil;
+import com.pet.adoption.util.PhotoReader;
 
 @RestController
 @RequestMapping("/adoption")
@@ -39,6 +42,8 @@ public class AdoPetController {
 
 	@Autowired
 	private ModelMapperUtil modelMapperUtil;
+	
+	
 
 	@PostMapping("/adopets")
 	public AdoPetDto addAdoPet(@Valid AdoPetParam adoPetParam) {
@@ -49,12 +54,11 @@ public class AdoPetController {
 	public AdoPetDto updateAdoPet(@Valid AdoPetParam adoPet) {
 		return modelMapperUtil.map(adoPetService.updateAdoPet(adoPet), AdoPetDto.class);
 	}
-	
+
 	@PatchMapping("/adopets/{adoPetNo}")
 	public AdoPetDto updateAdoStatus(@PathVariable Long adoPetNo, @RequestParam String adoStatus) {
 		return modelMapperUtil.map(adoPetService.updateAdoStatus(adoPetNo, adoStatus), AdoPetDto.class);
 	}
-
 
 	@DeleteMapping("/adopets/{adoPetNo}")
 	public void deleteAdopet(@PathVariable Long adoPetNo) {
@@ -90,48 +94,12 @@ public class AdoPetController {
 	@GetMapping("/show")
 	public void getAdopetPhoto(HttpServletResponse res, @RequestParam("adopetNo") Long adopetNo,
 			@RequestParam("adoPicNo") Long adoPicNo) throws IOException {
-
-		res.setContentType("image/gif");
-		ServletOutputStream out = res.getOutputStream();
-
-		AdoPetPic pics = adoPetPicService.getAdopetPhoto(adopetNo, adoPicNo);
-
-		byte[] buf = new byte[4 * 1024];
-
-		if (pics.getAdoPetPic() != null) {
-			ByteArrayInputStream bin = new ByteArrayInputStream(pics.getAdoPetPic());
-
-			int len;
-			while ((len = bin.read(buf)) != -1) {
-				out.write(buf, 0, len);
-			}
-			bin.close();
-			out.close();
-		}
-
+		adoPetPicService.getAdopetPhoto(res, adopetNo, adoPicNo);
 	}
 
 	@GetMapping("/show/{adopetNo}")
 	public void getAdopetPhoto(HttpServletResponse res, @PathVariable("adopetNo") Long adopetNo) throws IOException {
-
-		res.setContentType("image/gif");
-		ServletOutputStream out = res.getOutputStream();
-
-		AdoPetPic pic = adoPetPicService.getRandomPhoto(adopetNo);
-
-		if (pic.getAdoPetPic() != null) {
-		byte[] buf = new byte[4 * 1024];
-
-			ByteArrayInputStream bin = new ByteArrayInputStream(pic.getAdoPetPic());
-
-			int len;
-			while ((len = bin.read(buf)) != -1) {
-				out.write(buf, 0, len);
-			}
-			bin.close();
-			out.close();
-		}
-
+		adoPetPicService.getRandomPhoto(res, adopetNo);
 	}
 
 }

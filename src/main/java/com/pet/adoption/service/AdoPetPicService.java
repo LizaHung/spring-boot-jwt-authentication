@@ -1,6 +1,9 @@
 package com.pet.adoption.service;
 
+import java.io.IOException;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import com.pet.adoption.model.AdoPetPic;
 
@@ -13,6 +16,6 @@ import com.pet.adoption.model.AdoPetPic;
 public interface AdoPetPicService {
 
 	void deletePic(Long adoPicNo);
-	AdoPetPic getRandomPhoto (Long adoPetNo);
-	AdoPetPic getAdopetPhoto (Long adopetNo, Long adoPicNo);
+	void getRandomPhoto (HttpServletResponse res, Long adoPetNo) throws IOException;
+	void getAdopetPhoto (HttpServletResponse res, Long adopetNo, Long adoPicNo) throws IOException;
 }

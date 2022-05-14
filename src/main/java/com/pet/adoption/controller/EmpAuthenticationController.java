@@ -6,8 +6,12 @@ import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,12 +35,12 @@ public class EmpAuthenticationController {
 
 	@Autowired
 	private AuthenticationService authenticationService;
-	
+
 	@Autowired
 	private ModelMapperUtil modelMapperUtil;
 
 	@PostMapping("/login")
-	public LoginTokenDto login(@Valid @RequestBody LoginParam employee) {
+	public LoginTokenDto login(@Valid @RequestBody LoginParam employee, @RequestHeader("Host") String host) {
 		return authenticationService.loginAndReturnJWT(employee);
 	}
 
@@ -51,13 +55,19 @@ public class EmpAuthenticationController {
 	}
 
 	@PostMapping("/forgot")
-	public void forgetPsw(@Valid @RequestBody ForgotPswParam forgotPswParam) throws IOException, MessagingException {
-		empService.validEmp(forgotPswParam);
+	public void forgetPsw(@Valid @RequestBody ForgotPswParam forgotPswParam, @RequestHeader("Host") String host) throws IOException, MessagingException {
+		
+		empService.validEmp(forgotPswParam, host);
 	}
 
 	@PostMapping("/change")
 	public EmployeeDto ChangePsw(@RequestBody ChangePswParam changePswParam) throws IOException, MessagingException {
 		return modelMapperUtil.map(empService.ChangePsw(changePswParam), EmployeeDto.class);
+	}
+
+	@GetMapping
+	public ResponseEntity<String> getHost(@RequestHeader("Host") String host) {
+		return new ResponseEntity<>(host, HttpStatus.OK);
 	}
 
 }
