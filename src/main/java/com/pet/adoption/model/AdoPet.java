@@ -77,7 +77,6 @@ public class AdoPet implements Serializable {
 	private List<AdoPetPic> adoPetPic;
 	
 	public void add(AdoPetPic pics) {
-		System.out.println("add pics" );
 		if (adoPetPic == null) {
 			adoPetPic = new ArrayList<>();
 		}

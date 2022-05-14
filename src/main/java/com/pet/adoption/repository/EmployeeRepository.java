@@ -19,8 +19,4 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>{
 	Optional<Employee> findByEmpAccount(String empAccount);
 
 	List<Employee> findAll(Specification<Employee> spec);
-	
-//	@Query("select emp from Employee emp where emp.empName, emp.empAccount, emp.empNickname, emp.empEmail like %?1%")
-//	@Query("select emp from Employee emp where " + "concat(emp.empName, emp.empAccount, emp.empNickname, emp.empEmail)"+ "like %?1%")
-//	List<Employee> findAll(String word);
 }

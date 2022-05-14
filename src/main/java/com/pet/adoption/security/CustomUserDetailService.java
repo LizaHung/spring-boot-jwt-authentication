@@ -24,7 +24,7 @@ public class CustomUserDetailService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String empAccount) throws UsernameNotFoundException {
 		Employee employee = employeeService.findByEmpAccount(empAccount)
-				.orElseThrow(() -> new UserNotFoundException("Employee not found 12345: " + empAccount));
+				.orElseThrow(() -> new UserNotFoundException("Employee not found: " + empAccount));
 
 		if (employee.getEmpAccStatus().toString() == "INVALID")
 			throw new UserForbiddenException(employee.getEmpName() + "is forbidden");
