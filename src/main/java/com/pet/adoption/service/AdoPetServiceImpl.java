@@ -61,6 +61,12 @@ public class AdoPetServiceImpl implements AdoPetService {
 
 	@Value("${pdf.template.path}")
 	private String pdfPath;
+	
+	@Value("${pdf.stempFile.path}")
+	private String stempPath;
+	
+	@Value("${pdf.font.path}")
+	private String fontPath;
 
 	@Autowired
 	private ResourceLoader resourceLoader;
@@ -68,7 +74,6 @@ public class AdoPetServiceImpl implements AdoPetService {
 	@Override
 	@Transactional
 	public AdoPet saveAdoPet(AdoPetParam adoPet) {
-		System.out.println("status" + adoPet.getAdoStatus());
 
 		MultipartFile[] adoPetPic = adoPet.getPhotos();
 		AdoPet tempPet = modelMapperUtil.map(adoPet, AdoPet.class);
@@ -76,9 +81,7 @@ public class AdoPetServiceImpl implements AdoPetService {
 			tempPet.setAdoStatus(AdoStatusEnum.CREATE);
 
 		AdoPet adopet = adoPetRepository.save(tempPet);
-		System.out.println("modelMapperUtil done");
 
-		System.out.println("adopet NO done" + adopet.getAdoPetNo());
 
 		if (adoPetPic != null) {
 			for (MultipartFile file : adoPetPic) {
@@ -153,14 +156,10 @@ public class AdoPetServiceImpl implements AdoPetService {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		PdfWriter writer = new PdfWriter(byteArrayOutputStream);
 
-		PdfDocument pdfDoc;
-
-		File importPdf = new File(resourceLoader.getResource(pdfPath).getFile(), "PetfectMatchApply.pdf");
-		File importFontPath = new File(resourceLoader.getResource(pdfPath).getFile(), "simsun.ttc");
-
-		pdfDoc = new PdfDocument(new PdfReader(importPdf), writer);
+		PdfDocument pdfDoc = new PdfDocument(new PdfReader(resourceLoader.getResource(pdfPath).getInputStream()), writer);
 		Document doc = new Document(pdfDoc);
-		PdfFont sysFont = PdfFontFactory.createFont(importFontPath + ",1", PdfEncodings.IDENTITY_H, false);
+		
+		PdfFont sysFont = PdfFontFactory.createFont(resourceLoader.getResource(fontPath).getURL() + ",1", PdfEncodings.IDENTITY_H, false);
 
 		Paragraph name = new Paragraph(breeder.getBreederName());
 		name.setFixedPosition(185, 753, 100);
@@ -223,7 +222,6 @@ public class AdoPetServiceImpl implements AdoPetService {
 		phone.setFont(sysFont);
 		phone.setFontSize(13);
 		doc.add(phone);
-
 		Image id = new Image(ImageDataFactory.create(param.getIdLeft().getBytes()));
 		id.scaleAbsolute(240, 170);
 		id.setFixedPosition(50, 110);
@@ -264,12 +262,11 @@ public class AdoPetServiceImpl implements AdoPetService {
 		ByteArrayOutputStream pipeforDB = new ByteArrayOutputStream();
 
 		PdfDocument newPdf = new PdfDocument(new PdfReader(oldPdf), new PdfWriter(pipeforDB));
-		File stempFile = new File(resourceLoader.getResource(pdfPath).getFile(), "stemp.gif");
-		byte[] fileContent = Files.readAllBytes(stempFile.toPath());
-
-		File importFontPath = new File(resourceLoader.getResource(pdfPath).getFile(), "simsun.ttc");
-
-		PdfFont sysFont = PdfFontFactory.createFont(importFontPath + ",1", PdfEncodings.IDENTITY_H, false);
+		
+		
+		
+		byte[] fileContent = resourceLoader.getResource(stempPath).getInputStream().readAllBytes();
+		PdfFont sysFont = PdfFontFactory.createFont(resourceLoader.getResource(fontPath).getURL() + ",1", PdfEncodings.IDENTITY_H, false);
 		Document newdoc = new Document(newPdf);
 
 		Image stamp2 = new Image(ImageDataFactory.create(fileContent));
