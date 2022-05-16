@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,7 +44,7 @@ public class PdfController {
 	@GetMapping("/show/{adoPetNo}")
 	public void readPdf(HttpServletResponse res, @PathVariable Long adoPetNo) throws IOException {
 		res.setHeader("Content-Disposition","inline; filename=\"Petfect Match Application.pdf\"");
-		res.setContentType("application/pdf; name=\"Petfect Match Application.pdf\"");
+		res.setContentType("application/pdf");
 		
 		AdoPet adopet = adoPetService.findByAdoPetNo(adoPetNo);
 		ServletOutputStream out = res.getOutputStream();
